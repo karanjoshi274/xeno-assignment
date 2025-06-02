@@ -6,6 +6,8 @@ const session = require('express-session');
 const Redis = require('ioredis');
 const RedisStore = require('connect-redis').default; // ✅ note the `.default`
 
+console.log('connect-redis version:', require('connect-redis/package.json').version);
+
 
 const cors = require('cors');
 
