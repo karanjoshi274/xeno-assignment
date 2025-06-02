@@ -4,7 +4,7 @@ const dotenv = require('dotenv');
 const passport = require('passport');
 const session = require('express-session');
 const Redis = require('ioredis');
-const RedisStore = require('connect-redis').default; // ✅ note the `.default`
+const RedisStore = require('connect-redis')(session);
 
 console.log('connect-redis version:', require('connect-redis/package.json').version);
 
