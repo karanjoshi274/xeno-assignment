@@ -4,35 +4,31 @@ const dotenv = require('dotenv');
 const passport = require('passport');
 const session = require('express-session');
 const Redis = require('ioredis');
-const RedisStore = require('connect-redis')(session);
+const RedisStore = require('connect-redis').default;
 const cors = require('cors');
 
 const authRoutes = require('./routes/auth');
 const dataRoutes = require('./routes/data');
 const campaignRoutes = require('./routes/campaign');
 const deliveryRoutes = require('./routes/delivery');
-
+const aiRoutes = require('./routes/ai');
 const { initPassport } = require('./utils/passport');
 
 dotenv.config();
 const app = express();
 
-const aiRoutes = require('./routes/ai');
-app.use('/api', aiRoutes);
-
+// Redis client
+const redis = new Redis(process.env.REDIS_URL);
+const store = new RedisStore({ client: redis });
 
 // Middleware
 app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
 app.use(express.json());
 
-// Redis
-const redis = new Redis(process.env.REDIS_URL);
-const redisStore = new RedisStore({ client: redis });
-
 // Session
 app.use(
   session({
-    store: redisStore,
+    store,
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
@@ -50,12 +46,14 @@ app.use('/auth', authRoutes);
 app.use('/api', dataRoutes);
 app.use('/api', campaignRoutes);
 app.use('/api', deliveryRoutes);
+app.use('/api', aiRoutes);
 
-// DB Connection
+// MongoDB connection
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB connected'))
-  .catch(err => console.error(err));
+  .catch(err => console.error('MongoDB error:', err));
 
+// Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
