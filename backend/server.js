@@ -4,7 +4,7 @@ const dotenv = require('dotenv');
 const passport = require('passport');
 const session = require('express-session');
 const Redis = require('ioredis');
-const RedisStore = require('connect-redis').default;
+const RedisStore = require('connect-redis');
 const cors = require('cors');
 
 const authRoutes = require('./routes/auth');
@@ -19,7 +19,10 @@ const app = express();
 
 // Redis client
 const redis = new Redis(process.env.REDIS_URL);
-const store = new RedisStore({ client: redis });
+const store = new RedisStore({
+  client: redis,
+  prefix: "sess:", // optional but recommended
+});
 
 // Middleware
 app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
