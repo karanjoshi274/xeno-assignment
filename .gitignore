@@ -1,0 +1,12 @@
+# Ignore backend environment variables
+backend/.env
+
+# Node dependencies
+node_modules/
+
+# Logs
+*.log
+
+# System files
+.DS_Store
+Thumbs.db
